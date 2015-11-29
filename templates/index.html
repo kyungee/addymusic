@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}AddyMusic{% endblock %}
+
+{% block body %}
+
+
+<h1>Hello World</h1>
+
+<div class="ui grid">
+        <div class="two column computer only row">
+          <div class="four wide column">
+            <div class="ui cards">
+              <div class="card">
+                <div class="content">
+                  <img class="right floated mini ui image" src="/images/avatar/large/elliot.jpg">
+                  <div class="header">
+                    제목
+                  </div>
+                  <div class="meta">
+                    Friends of Veronika
+                  </div>
+                </div>
+                <div class="extra content">
+                  <div class="ui two buttons">
+                    <div class="ui basic green button">Add</div>
+                    <div class="ui basic red button">Delete</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="ten wide column">
+            <div class="ui input">
+              <input type="text" placeholder="Search..." id="search">
+            </div>
+            <div class="ui cards" id="card-container">
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+$(document).ready(function() {
+
+  function makeCardHtml(img, title) {
+    var tag = `
+    <div class="card">
+      <div class="blurring dimmable image">
+        <div class="ui dimmer">
+          <div class="content">
+            <div class="center">
+              <div class="ui inverted button">Add Friend</div>
+            </div>
+          </div>
+        </div>
+        <div class="image">
+          <img src="@img">
+        </div>
+      </div>
+      <div class="content">
+        <a class="header">@title</a>
+      </div>
+      <div class="extra content">
+        <a>
+          <i class="user icon"></i>
+          22 Friends
+        </a>
+      </div></div>`;
+      return tag.replace('@img', img).replace('@title', title);
+  }
+
+  $("#search").keypress(function(e) {
+    if(e.keyCode==13){
+      $.get('/api/search/'+$(this).val(), function(data){
+        var tags = '';
+        for (var i=0; i<data['data'].length; i++) {
+            var obj = data['data'][i];
+            var html = makeCardHtml(obj.snippet.thumbnails.high.url, obj.snippet.title);
+            tags += html;
+          }
+          $('#card-container').html(tags);
+          $('#card-container .image').dimmer({
+            on: 'hover'
+          });
+
+      })
+    }
+  });
+});
+</script>
+{% endblock %}
